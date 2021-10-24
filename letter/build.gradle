@@ -4,14 +4,11 @@
 
 plugins {
     id 'java'
-    id 'maven-publish'
+	id 'com.github.johnrengelman.shadow' version '7.1.0'    
 }
 
 repositories {
-    mavenLocal()
-    maven {
-        url = uri('https://repo.maven.apache.org/maven2/')
-    }
+    jcenter()
 }
 
 dependencies {
@@ -19,25 +16,18 @@ dependencies {
     implementation 'com.github.javafaker:javafaker:1.0.2'
 }
 
-group = 'dgtest'
+group = 'com.datengaertnerei.test'
 version = '0.0.1-SNAPSHOT'
-description = 'docgen'
+description = 'letter'
 java.sourceCompatibility = JavaVersion.VERSION_11
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
-}
-
-task customFatJar(type: Jar) {
-	configurations.implementation.setCanBeResolved(true)	
-    manifest {
+jar {
+   manifest {
         attributes 'Main-Class': 'com.datengaertnerei.test.randomletter.App'
-    }
-    archiveBaseName = 'all-in-one-jar'
-    from { configurations.implementation.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
+   }
+}
+shadowJar {
+   archiveBaseName.set('random-letter')
+   archiveClassifier.set('')
+   archiveVersion.set('')
 }

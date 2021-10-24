@@ -15,26 +15,45 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.logging.LoggingFeature;
 
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
 public class App {
 
+	private static final String HEIGHT_SHORT = "h";
+	private static final String WIDTH_SHORT = "w";
+	private static final String KEYWORD_SHORT = "s";
+	private static final String IMAGE_BY = "Image by ";
 	private static final String PIXABAY_API_KEY = "PixabayApiKey";
 
-	public static void main(String[] args) throws IOException {
-
-		String srch = "inspiration";
-		int targetWidth = 1600;
-		int targetHeight = 900;
-		String orientation = "horizontal";
+	public static void main(String[] args) throws IOException, ParseException {
+		
+		// create Options object
+		Options options = new Options();
+		options.addOption(KEYWORD_SHORT, true, "keyword to search");		
+		options.addOption(WIDTH_SHORT, true, "width");		
+		options.addOption(HEIGHT_SHORT, true, "height");		
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = parser.parse( options, args);
+		
+		
+		String srch = cmd.getOptionValue(KEYWORD_SHORT);
+		int targetWidth = Integer.parseInt(cmd.getOptionValue(WIDTH_SHORT));
+		int targetHeight = Integer.parseInt(cmd.getOptionValue(HEIGHT_SHORT));
+		String orientation = targetWidth > targetHeight ? "horizontal" : "vertical";
 
 		Preferences prefs = Preferences.userRoot().node("pix");
 		String apiKey = prefs.get(PIXABAY_API_KEY, "");
@@ -82,7 +101,7 @@ public class App {
 		outputImage.getGraphics().drawImage(resultingImage, (interimWidth - targetWidth) / -2,
 				(interimHeight - targetHeight) / -2, null);
 		int fontHeight = outputImage.getGraphics().getFontMetrics().getHeight();
-		outputImage.getGraphics().drawString("Image by " + hit.getUser(), 5, 5 + fontHeight);
+		outputImage.getGraphics().drawString(IMAGE_BY + hit.getUser(), 5, 5 + fontHeight);
 
 		String filename = new StringBuilder().append(srch).append("-").append(hit.getId()).append("-")
 				.append(targetWidth).append("-").append(targetHeight).append(".jpg").toString();
