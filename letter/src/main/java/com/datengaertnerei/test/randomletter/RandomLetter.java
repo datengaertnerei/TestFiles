@@ -96,7 +96,7 @@ public class RandomLetter {
 			}
 			contentStream.newLineAtOffset(0, -leading);
 		}
-		contentStream.showText("Mit freundlichen Grüßen");
+		contentStream.showText("Mit freundlichen GrÃ¼ÃŸen");
 		contentStream.endText();
 	}
 
