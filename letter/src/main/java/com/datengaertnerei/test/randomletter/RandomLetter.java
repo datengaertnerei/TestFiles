@@ -55,7 +55,7 @@ public class RandomLetter {
 	public void generate(OutputStream out) throws IOException {
 		// Start a new content stream for the page
 		PDPageContentStream contentStream = new PDPageContentStream(document, page);
-		
+
 		contentStream.setFont(font, fontSize);
 
 		addAddressBlock(contentStream);
@@ -69,16 +69,15 @@ public class RandomLetter {
 		// Make sure that the content stream is closed:
 		contentStream.close();
 		document.addPage(page);
-		
+
 		// Save the newly created document
 		document.save(out);
-		
+
 		// finally make sure that the document is properly closed.
 		document.close();
 	}
 
-	private void addFooter(PDPageContentStream contentStream)
-			throws IOException {
+	private void addFooter(PDPageContentStream contentStream) throws IOException {
 		contentStream.beginText();
 		contentStream.newLineAtOffset(leftBound, millimeterToPoints(10.0f) + leading);
 		contentStream.showText(faker.company().name() + " - " + faker.address().fullAddress());
@@ -129,8 +128,7 @@ public class RandomLetter {
 		contentStream.endText();
 	}
 
-	private List<String> buildLines(String text)
-			throws IOException {
+	private List<String> buildLines(String text) throws IOException {
 		List<String> lines = new ArrayList<String>();
 		int lastSpace = -1;
 		while (text.length() > 0) {
