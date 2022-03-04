@@ -8,6 +8,7 @@
 plugins {
     id 'java'
 	id 'com.github.johnrengelman.shadow' version '7.1.2'    
+	id 'maven-publish'  
 }
 
 group = 'com.datengaertnerei.test'
@@ -47,4 +48,17 @@ shadowJar {
    archiveBaseName.set('keyword-pix')
    archiveClassifier.set('')
    archiveVersion.set('')
+}
+
+publishing {
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      url = "https://maven.pkg.github.com/datengaertnerei/TestFiles"
+      credentials {
+        username = System.getenv("GITHUB_ACTOR")
+        password = System.getenv("GITHUB_TOKEN")
+      }
+    }
+  }
 }
