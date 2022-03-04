@@ -29,7 +29,6 @@ dependencies {
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
 	
 	implementation 'commons-cli:commons-cli:1.5.0'
-<<<<<<< HEAD
 	
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
@@ -37,8 +36,6 @@ dependencies {
 	testImplementation 'org.mock-server:mockserver-client-java:5.12.0'
 	testImplementation 'org.mock-server:mockserver-netty:5.12.0'	
 	implementation 'commons-cli:commons-cli:1.5.0'
-=======
->>>>>>> branch 'main' of https://github.com/datengaertnerei/TestFiles.git
 }
 
 jar {
