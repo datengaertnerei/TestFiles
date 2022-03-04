@@ -9,8 +9,6 @@ import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.Test;
 
-import com.datengaertnerei.test.randomletter.RandomLetter;
-
 public class RandomLetterTest {
 	
 	@Test
