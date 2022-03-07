@@ -12,7 +12,6 @@ import static org.mockserver.model.Parameter.param;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -36,11 +35,15 @@ public class PixTest {
 		} catch (IOException e) {
 			fail(e);
 		}
-		
-		Path path = Paths.get("sonne-1933340-640-480.jpg");
-		assertTrue(Files.exists(path, LinkOption.NOFOLLOW_LINKS));
-		path = Paths.get("sonne-3797650-640-480.jpg");
-		assertTrue(Files.exists(path, LinkOption.NOFOLLOW_LINKS));
+
+		try {
+			Path path = Paths.get("sonne-1933340-640-480.jpg");
+			assertTrue(Files.deleteIfExists(path));
+			path = Paths.get("sonne-3797650-640-480.jpg");
+			assertTrue(Files.deleteIfExists(path));
+		} catch (IOException e) {
+			fail(e);
+		}
 
 	}
 
