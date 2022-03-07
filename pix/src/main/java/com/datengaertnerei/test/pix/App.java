@@ -69,7 +69,7 @@ public class App {
 
 	}
 
-	private static void getImageList(String apiBase, String srch, int targetWidth, int targetHeight, String orientation,
+	static void getImageList(String apiBase, String srch, int targetWidth, int targetHeight, String orientation,
 			String apiKey) throws MalformedURLException, IOException {
 		StringBuilder pixTarget = new StringBuilder(apiBase + "?key=").append(apiKey)
 				.append("&image_type=photo&per_page=10&min_width=1000&min_height=1000&q=").append(srch)
@@ -80,7 +80,7 @@ public class App {
 
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.get();
-
+		
 		PBResponse result = response.readEntity(PBResponse.class);
 
 		for (Hit hit : result.getHits()) {
