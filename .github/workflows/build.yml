@@ -26,16 +26,19 @@ jobs:
                 
     - name: Validate Gradle wrapper
       uses: gradle/wrapper-validation-action@859c33240bd026ce8d5f711f5adcc65c2f8eafc1
-
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
     
     - name: Execute pix build
-      run:  pix/gradlew publish
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: publish
+        build-root-directory: pix
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Execute letter build
-      run:  letter/gradlew publish
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: publish
+        build-root-directory: pix
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
