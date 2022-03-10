@@ -46,8 +46,8 @@ publishing {
     }
   }
   publications {
-    gpr(MavenPublication) {
-      from(components.java)
+    shadow(MavenPublication) {
+      artifact shadowJar
     }
-  }  
+  }    
 }
