@@ -1,6 +1,8 @@
 package com.datengaertnerei.test.randomletter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -8,17 +10,30 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import javax.xml.transform.TransformerException;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.PDFAIdentificationSchema;
+import org.apache.xmpbox.type.BadFieldValueException;
+import org.apache.xmpbox.xml.XmpSerializer;
 
 import com.github.javafaker.Faker;
 
 public class RandomLetter {
 
+	private static final String ISO_COATED_V2_300_BAS_IC_COLOR = "ISO Coated v2 300% (basICColor)";
 	private Faker faker;
 	private PDDocument document;
 	private PDPage page;
@@ -38,7 +53,15 @@ public class RandomLetter {
 		document = new PDDocument();
 		page = new PDPage(PDRectangle.A4);
 
-		font = PDType1Font.HELVETICA;
+		try {
+			InputStream fontStream = getClass()
+					.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+			font = PDType0Font.load(document, fontStream);
+		} catch (IOException e) {
+			//fallback
+			font = PDType1Font.HELVETICA;
+		}
+
 		fontSize = 11;
 		leading = 1.5f * fontSize;
 
@@ -53,6 +76,9 @@ public class RandomLetter {
 	}
 
 	public void generate(OutputStream out) throws IOException {
+
+		addPDFAData();
+
 		// Start a new content stream for the page
 		PDPageContentStream contentStream = new PDPageContentStream(document, page);
 
@@ -75,6 +101,45 @@ public class RandomLetter {
 
 		// finally make sure that the document is properly closed.
 		document.close();
+	}
+
+	private void addPDFAData() {
+
+		PDDocumentCatalog cat = document.getDocumentCatalog();
+		PDMetadata metadata = new PDMetadata(document);
+		cat.setMetadata(metadata);
+
+		PDMarkInfo markInfo = new PDMarkInfo();
+		markInfo.setMarked(true);
+		cat.setMarkInfo(markInfo);
+
+		try {
+			XMPMetadata xmp = XMPMetadata.createXMPMetadata();
+			PDFAIdentificationSchema id = xmp.createAndAddPFAIdentificationSchema();
+			id.setPart(3);
+			id.setConformance("B");
+			XmpSerializer serializer = new XmpSerializer();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			serializer.serialize(xmp, baos, true);
+			metadata.importXMPMetadata(baos.toByteArray());
+
+			InputStream colorProfile = getClass()
+					.getResourceAsStream("/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc");
+			PDOutputIntent oi = new PDOutputIntent(document, colorProfile);
+			oi.setInfo(ISO_COATED_V2_300_BAS_IC_COLOR);
+			oi.setOutputCondition(ISO_COATED_V2_300_BAS_IC_COLOR);
+			oi.setOutputConditionIdentifier(ISO_COATED_V2_300_BAS_IC_COLOR);
+			oi.setRegistryName("https://www.colormanagement.org/");
+			cat.addOutputIntent(oi);			
+		} catch (BadFieldValueException | TransformerException | IOException e) {
+			// test data generator -> just dump the stacktrace
+			e.printStackTrace();
+		}
+	    
+		
+		PDStructureTreeRoot newTreeRoot = new PDStructureTreeRoot();			
+		cat.setStructureTreeRoot(newTreeRoot);
+		
 	}
 
 	private void addFooter(PDPageContentStream contentStream) throws IOException {
